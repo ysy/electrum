@@ -741,6 +741,8 @@ class Network(util.DaemonThread):
                 self.request_fee_estimates()
 
     def request_chunk(self, interface, idx):
+        if ((idx * 2016) > 512666):
+            return
         interface.print_error("requesting chunk %d" % idx)
         self.queue_request('blockchain.block.get_chunk', [idx], interface)
         interface.request = idx
@@ -763,7 +765,7 @@ class Network(util.DaemonThread):
         if not connect:
             self.connection_down(interface.server)
             return
-        if interface.blockchain.height() < interface.tip:
+        if (interface.blockchain.height() < interface.tip) or (interface.blockchain.height() < 512666):
             self.request_chunk(interface, index+1)
         else:
             interface.request = None
